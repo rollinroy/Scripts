@@ -1,0 +1,6 @@
+*.DS_Store
+*.image
+*.log
+*.pyc
+*.numbers
+__pycache__/
