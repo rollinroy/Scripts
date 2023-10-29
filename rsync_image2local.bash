@@ -89,6 +89,7 @@ if [[ ! -d $srcFolder ]]; then
     fi
     hdiutil attach $imageFile
 fi
+echo "Start rsync at `date` ..."
 #
 # rsync
 #
