@@ -11,7 +11,7 @@ f () {
 }
 function Help() {
 cat  << EOF
-    This script copies (rsync) a local folder from an image file.  Command syntax:
+    This script copies (rsync) an image file to a local folder.  Command syntax:
        rsync_image [options] <local folder> where options include:
          1   option -i : image file base name (default: rb-mbp-<local folder>)
          2   option -r : mounted image folder (/Volumes/ImageBackups)
@@ -29,7 +29,7 @@ fi
 D_IFOLDER="/Volumes/ImageBackups"
 D_IBASE=""
 D_DRYRUN=""
-D_IPBASE="rb-mbp-"
+D_IPBASE="rb-mbp"
 # process options
 while getopts ":i:d:hn" opt; do
   case $opt in
@@ -76,7 +76,7 @@ iBase=$D_IBASE
 if [[ -z $iBase ]]; then
   iBase=$D_IPBASE-$baseName
 fi
-imageFile=/Volumes/${iBase}.sparsebundle
+imageFile=/Volumes/ImageBackups/${iBase}.sparsebundle
 srcFolder=/Volumes/${iBase}/
 #
 # check src attached/mounted
