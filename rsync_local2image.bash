@@ -59,6 +59,10 @@ fi
 # src folder and check if it exists
 #
 srcFolder=$1
+lchar="${srcFolder: -1}"
+if [[ "$lchar" != "/" ]]; then
+  srcFolder=$srcFolder/
+fi
 if [[ ! -d $srcFolder ]]; then
   echo "local source folder $srcFolder does net exist"
   exit 1
@@ -94,7 +98,7 @@ fi
 #
 # rsync local src folder to mounted image file
 #
-echo "rsync $srcFolder to $imageMountName ..."
+echo "`date` - rsync $srcFolder to $imageMountName ..."
 if [[ "$D_DRYRUN" == "y" ]]; then
     RSYNC_N="-n"
 else
