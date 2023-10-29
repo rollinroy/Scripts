@@ -15,7 +15,7 @@ cat  << EOF
     must be already mounted.
 
     Command syntax:
-       rsync_image_backup [options] <local folder> where options include:
+       rsync_local2image [options] <local folder> where options include:
          1   option -i : image file base name (default: rb-mbp-<local folder>)
          2   option -r : remote mounted image folder (/Volumes/ImageBackups)
          3   optoin -n : rsync dry run

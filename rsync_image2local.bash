@@ -12,7 +12,7 @@ f () {
 function Help() {
 cat  << EOF
     This script copies (rsync) an image file to a local folder.  Command syntax:
-       rsync_image [options] <local folder> where options include:
+       rsync_image2local [options] <local folder> where options include:
          1   option -i : image file base name (default: rb-mbp-<local folder>)
          2   option -r : mounted image folder (/Volumes/ImageBackups)
          3   optoin -n : rsync dry run
