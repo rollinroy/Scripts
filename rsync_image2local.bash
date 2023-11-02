@@ -21,8 +21,8 @@ cat  << EOF
 EOF
 }
 HNAME=`hostname`
-if [[ "$HNAME" != "rb-imac.local" ]]; then
-  echo "Script only runs on rb-imac.local (not $HNAME)"
+if [[ "$HNAME" != "rb-imac.local" ]]  && [[ "$HNAME" != "rb-newmm.local" ]]; then
+  echo "Script only runs on rb-imac.local or  rb-newmm.local (not $HNAME)"
   exit 1
 fi
 # input arguments and options
