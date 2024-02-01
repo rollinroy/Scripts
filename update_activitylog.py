@@ -44,15 +44,18 @@ def ppDebug(msg,ppData):
         print(debugPrefix+msg)
         pprint.pprint(ppData)
 
-defLogDest = '/Users/royboy/Google Drive/My Drive/ActivityLogs'
 
 def CopyLog(logFile, destDir):
     pInfo("Copying " + os.path.basename(logFile) + " to: " + destDir)
     shutil.copy2(logFile, destDir)
 
-
-parser = ArgumentParser( description = "Copy an activity log file to google drive ..." )
-parser.add_argument( "logFile", nargs = 1, help = "Activity log file [required]" )
+defLogDest = '/Users/royboy/Google Drive/My Drive/ActivityLogs'
+actLogFiles = ["/tmp/mongodb_reports.log",
+               "/tmp/backup_mongodb.log",
+               "/tmp/rsync_work.log",
+               "/tmp/rsync_scratch.log",
+               "/tmp/rsync_data.log"]
+parser = ArgumentParser( description = "Copy the activity log files to google drive ..." )
 parser.add_argument( "-d", "--dest", default = defLogDest,
                      help = "destination folder for copying log file [default: " + defLogDest + "]" )
 parser.add_argument( "-D", "--Debug", action="store_true", default = False,
@@ -60,20 +63,16 @@ parser.add_argument( "-D", "--Debug", action="store_true", default = False,
 parser.add_argument( "--version", action="store_true", default = False,
                      help = "Print version of " + __file__ )
 args = parser.parse_args()
-if len(args.logFile) > 1:
-    pError('>>> More than 1 argument provided ' + str(args.root))
-    sys.exit(2)
-logFile = args.logFile[0]
-pInfo('Activity log file: ' + logFile)
 debug = args.Debug
 destFolder = args.dest
 
-# check files exists
-if not os.path.isfile(logFile):
-    pError('Log file ' + logFile + ' does not exist; no copy')
-    sys.exit(1)
-if not os.path.isdir(destFolder):
-    pError('Destination copy folder ' + destFolder + ' does not exist; no copy')
-    sys.exit(1)
+for logFile in actLogFiles:
+    # check files exists
+    if not os.path.isfile(logFile):
+        pError('Log file ' + logFile + ' does not exist; no copy')
+        sys.exit(1)
+    if not os.path.isdir(destFolder):
+        pError('Destination copy folder ' + destFolder + ' does not exist; no copy')
+        sys.exit(1)
 
-CopyLog(logFile, destFolder)
+    CopyLog(logFile, destFolder)
