@@ -21,6 +21,9 @@ cat  << EOF
          3   option -h : help
 EOF
 }
+# script name and date
+SCRIPTNAME=$(basename "$0")
+DATE=$(date '+%Y-%m-%d %H:%M:%S')
 # input arguments and options
 D_DELETE="y"
 D_DRYRUN=""
@@ -94,7 +97,8 @@ if [[ "$D_DELETE" == "y" ]]; then
 else
     RSYNC_DELETE=""
 fi
-
+echo ">>> Executing $SCRIPTNAME at $DATE"
 RSYNC_CMD="rsync -av ${RSYNC_DELETE} --exclude .Trashes --exclude .fseventsd --exclude .Temporary* --exclude .Spotlight* --exclude .meta*  --exclude .Document* ${RSYNC_N} $srcFolder $dstFolder"
 echo "$RSYNC_CMD"
 time eval "$RSYNC_CMD"
+echo ">>> $SCRIPTNAME finished at $DATE"
