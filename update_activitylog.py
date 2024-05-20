@@ -52,9 +52,7 @@ def CopyLog(logFile, destDir):
 defLogDest = '/Users/royboy/Google Drive/My Drive/ActivityLogs'
 actLogFiles = ["/tmp/mongodb_reports.log",
                "/tmp/backup_mongodb.log",
-               "/tmp/rsync_work.log",
-               "/tmp/rsync_scratch.log",
-               "/tmp/rsync_data.log"]
+               "/tmp/rsync_all2backup.log"]
 parser = ArgumentParser( description = "Copy the activity log files to google drive ..." )
 parser.add_argument( "-d", "--dest", default = defLogDest,
                      help = "destination folder for copying log file [default: " + defLogDest + "]" )
