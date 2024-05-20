@@ -14,17 +14,23 @@ cat  << EOF
     the iMac.  The remote folder must be already mounted via finder.
 
     Command syntax:
-       rsync_local2imac [options] <local folder> <imac folder> where options include:
-         1   optoin -n : rsync dry run
-         2   option -h : help
+    rsync_local2imac [options] <local folder> [<dst folder>] where options include:
+      1   option -N : rsync dO not delete files in the archive that don't match on local
+      2   optoin -n : rsync dry run
+      3   option -h : help
 EOF
 }
+# script name and date
+SCRIPTNAME=$(basename "$0")
 # input arguments and options
+D_DELETE="y"
 D_DRYRUN=""
 # process options
-while getopts ":i:r:hn" opt; do
+while getopts ":hnN" opt; do
   case $opt in
     n) D_DRYRUN="y"
+    ;;
+    N) D_DELETE="n"
     ;;
     h) Help
     exit
@@ -39,24 +45,20 @@ while getopts ":i:r:hn" opt; do
 
 done
 #
-# get the dst/src arguments
+# get the src folder
 #
 shift "$((OPTIND-1))"
 if [ -z "$1" ]; then
     echo "local source folder is required"
     exit 1
 fi
-if [ -z "$2" ]; then
-    echo "imac dst folder is required"
-    exit 1
-fi
+#
+# src and optional dst
+#
 srcFolder=$1
 dstFolder=$2
-
 #
-# src folder and check if it exists
-#
-srcFolder=$1
+# check src (required)
 lchar="${srcFolder: -1}"
 if [[ "$lchar" != "/" ]]; then
   srcFolder=$srcFolder/
@@ -66,25 +68,36 @@ if [[ ! -d $srcFolder ]]; then
   exit 1
 fi
 #
+# src base name
+#
+srcBase=$(basename "$srcFolder")
+#
 # dst folder
 #
 if [ -z $dstFolder ]; then
-  dstFolder=/Volumes/$dstFolder
+  dstFolder=/Volumes/iMac_$srcBase
 fi
 if [[ ! -d $dstFolder ]]; then
-  echo "imac $dstFolder does not exist"
+  echo "Backup $dstFolder does not exist"
   exit 1
 fi
-
 #
-# rsync local src folder to mounted image file
+# rsync local src folder to backup
 #
-echo "`date` - rsync $srcFolder to $dstFolder ..."
 if [[ "$D_DRYRUN" == "y" ]]; then
     RSYNC_N="-n"
 else
     RSYNC_N=""
 fi
-RSYNC_CMD="rsync -av --delete --exclude .Trashes --exclude .fseventsd --exclude .Temporary* --exclude .Spotlight* --exclude .meta*  --exclude .Document* ${RSYNC_N} $srcFolder $dstFolder"
+if [[ "$D_DELETE" == "y" ]]; then
+    RSYNC_DELETE="--delete"
+else
+    RSYNC_DELETE=""
+fi
+TIME_START=$(date '+%Y-%m-%d %H:%M:%S')
+echo ">>> Executing $SCRIPTNAME at $TIME_START - rsync $srcFolder to $dstFolder ..."
+RSYNC_CMD="rsync -av ${RSYNC_DELETE} --exclude .Trashes --exclude .fseventsd --exclude .Temporary* --exclude .Spotlight* --exclude .meta*  --exclude .Document* ${RSYNC_N} $srcFolder $dstFolder"
 echo "$RSYNC_CMD"
 time eval "$RSYNC_CMD"
+TIME_END=$(date '+%Y-%m-%d %H:%M:%S')
+echo ">>> $SCRIPTNAME: started at $TIME_START and finished at $TIME_END"
