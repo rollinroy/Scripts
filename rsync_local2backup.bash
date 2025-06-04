@@ -98,7 +98,7 @@ else
     RSYNC_DELETE=""
 fi
 echo ">>> Executing $SCRIPTNAME at $DATE"
-RSYNC_CMD="rsync -av ${RSYNC_DELETE} --exclude .Trashes --exclude .fseventsd --exclude .Temporary* --exclude .Spotlight* --exclude .meta*  --exclude .Document* ${RSYNC_N} $srcFolder $dstFolder"
+RSYNC_CMD="rsync --protocol=28 -av ${RSYNC_DELETE} --exclude .Trashes --exclude .fseventsd --exclude .Temporary* --exclude .Spotlight* --exclude .meta*  --exclude .Document* ${RSYNC_N} $srcFolder $dstFolder"
 echo "$RSYNC_CMD"
 time eval "$RSYNC_CMD"
 echo ">>> $SCRIPTNAME finished at $DATE"
