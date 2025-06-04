@@ -17,7 +17,7 @@ cat  << EOF
     Note: The backup volumes must be mounted (e.g., /Volumes/BU_DataSSD)
 EOF
 }
-LOG_FILE=/tmp/rsync_all2backup.log
+LOG_FILE=/tmp/rsync_data.log
 
 DATA_SRC=/Volumes/DataSSD
 bash_cmd="/Volumes/WorkSSD/work_roy/Scripts/rsync_local2backup.bash ${DATA_SRC} >> ${LOG_FILE} 2>&1"
@@ -25,12 +25,14 @@ TIME_START=$(date '+%Y-%m-%d %H:%M:%S')
 echo "${TIME_START}: copy ${DATA_SRC} to BU volume (log: ${LOG_FILE})"
 time eval "$bash_cmd"
 
+LOG_FILE=/tmp/rsync_work.log
 DATA_SRC=/Volumes/WorkSSD
 bash_cmd="/Volumes/WorkSSD/work_roy/Scripts/rsync_local2backup.bash ${DATA_SRC} >> ${LOG_FILE} 2>&1"
 TIME_START=$(date '+%Y-%m-%d %H:%M:%S')
 echo "${TIME_START}: copy ${DATA_SRC} to BU volume (log: ${LOG_FILE})"
 time eval "$bash_cmd"
 
+LOG_FILE=/tmp/rsync_scratch.log
 DATA_SRC=/Volumes/ScratchSSD
 bash_cmd="/Volumes/WorkSSD/work_roy/Scripts/rsync_local2backup.bash ${DATA_SRC} >> ${LOG_FILE} 2>&1"
 TIME_START=$(date '+%Y-%m-%d %H:%M:%S')
