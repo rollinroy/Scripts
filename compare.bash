@@ -6,7 +6,7 @@
 # Arguments:
 #   arg1: source folder
 #   arg2: compare folder
-#   arg3: source file extension (def: *.m)
+#   arg3: source file extension (def: *.json)
 #
 #   optional arg2: base R (R-3, R-4, etc)
 f () {
@@ -103,11 +103,11 @@ cmp_file () {
     fi
     # rename diff file and add header
     if [[ -s $TFILE ]]; then
-        DFILE=$FNAME.diff
+        DFILE=$CMP_DIR/${FNAME}.diff
         if [[ -f $DFILE ]]; then
             NF=`ls "$FNAME"*`
             FN=`echo $NF | awk '{print NF}'`
-            DFILE=${FNAME}_${FN}.diff
+            DFILE=$CMP_DIR/${FNAME}_${FN}.diff
         fi
         echo -e "< $IFILE \n> $CFILE" | cat - $TFILE > $DFILE
     fi
@@ -118,7 +118,7 @@ cmp_file () {
 
 SRC_FOLDER=$1
 CMP_FOLDER=$2
-FILE_EXT=${3:-*.m}
+FILE_EXT=${3:-*.py}
 
 if [[ $# -lt 2 ]]; then
     echo 2 arguments are required - source folder and compare folders
@@ -145,10 +145,17 @@ echo Comparing each file $FILE_EXT found in $SRC_FOLDER to the same file in $CMP
 #find $SRC_FOLDER -name "$FILE_EXT" -exec bash -c 'find_src "$@"' bash {} +
 # find can return multi-lines so we handle that case special with IFS/read
 # initialize the output files - missing, multiple, found
-MFILE=missing_files.txt
-AFILE=multiple_files.txt
-FFILE=found_files.txt
-TFILE=tmp.diff
+CMP_DIR=./cmp_results
+if [ ! -d "$CMP_DIR" ]; then
+    mkdir -p "$CMP_DIR"
+     echo "Directory '$CMP_DIR' created."
+else
+     echo "Directory '$CMP_DIR' already exists."
+fi
+MFILE=$CMP_DIR/cmp_missing_files.txt
+AFILE=$CMP_DIR/cmp_multiple_files.txt
+FFILE=$CMP_DIR/cmp_found_files.txt
+TFILE=$CMP_DIR/cmp_tmp.diff
 [[ -f $MFILE ]] && rm $MFILE
 [[ -f $AFILE ]] && rm $AFILE
 [[ -f $FFILE ]] && rm $FFILE
