@@ -3,4 +3,5 @@
 *.log
 *.pyc
 *.numbers
+cmp_results/*
 __pycache__/
