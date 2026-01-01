@@ -8,28 +8,35 @@ f () {
     echo "     on line ${BASH_LINENO[0]}"
     exit $errcode  # or use some other value or do return instead
 }
+
+LOG_FILE=/tmp/rsync_local2archive.log
+THE_SCRIPT=/Volumes/WorkSSD/work_roy/Scripts/rsync_4all.bash
+
 function Help() {
 cat  << EOF
-    This script copies (rsync) a folder on the local host to an archive disk and
-    folder. By default, newer files (or files no present on the local host) will
-    not be deleted on the archive.  The archived disk must be already mounted.
+    This script archives a src folder to an archive folder via script:
+        ${THE_SCRIPT} SRC_Folder Archive_Folder
+    As an archive, it does not delete files in the archive that are newer or
+    does not exist in the src folder.
 
-    Command syntax:
-       rsync_local2archive [options] <local folder> [<dst folder>] where options include:
-         1   option -D : rsync delete files in the archive that don't mach on local
-         2   optoin -n : rsync dry run
-         3   option -h : help
+    Options:
+        -n)   dry run
+        -D)   delete newer files in archive
+        -l)   log output to ${LOG_FILE}
 EOF
 }
 # input arguments and options
-D_DELETE=""
+D_DELETE="n"
 D_DRYRUN=""
+D_LOG=""
 # process options
-while getopts ":hnD" opt; do
+while getopts ":hlnD" opt; do
   case $opt in
     n) D_DRYRUN="y"
     ;;
     D) D_DELETE="y"
+    ;;
+    l) D_LOG="y"
     ;;
     h) Help
     exit
@@ -37,18 +44,26 @@ while getopts ":hnD" opt; do
     \?) echo "Invalid option -$OPTARG" >&2
     exit 1
     ;;
-    :) echo "Invalid option: $OPTARG requires two arguments (dst/src)" 1>&2
+    :) echo "Option -$OPTARG requires an argument." 1>&2
     exit 1
     ;;
   esac
 
 done
 #
-# get the src folder
+# get what's left
 #
 shift "$((OPTIND-1))"
+
+#
+# get the src folder
+#
 if [ -z "$1" ]; then
     echo "local source folder is required"
+    exit 1
+fi
+if [ -z "$2" ]; then
+    echo "archive destination folder is required"
     exit 1
 fi
 #
@@ -56,46 +71,23 @@ fi
 #
 srcFolder=$1
 dstFolder=$2
-#
-# check src (required)
-lchar="${srcFolder: -1}"
-if [[ "$lchar" != "/" ]]; then
-  srcFolder=$srcFolder/
-fi
-if [[ ! -d $srcFolder ]]; then
-  echo "local source folder $srcFolder does net exist"
-  exit 1
-fi
-#
-# src base name
-#
-srcBase=$(basename "$srcFolder")
-#
-# dst folder
-#
-if [ -z $dstFolder ]; then
-  dstFolder=/Volumes/ArchiveSSD/$srcBase
-fi
-if [[ ! -d $dstFolder ]]; then
-  echo "Archive $dstFolder does not exist"
-  exit 1
-fi
-#
-# rsync local src folder to mounted image file
-#
-echo "`date` - rsync $srcFolder to $imageMountName ..."
-if [[ "$D_DRYRUN" == "y" ]]; then
-    RSYNC_N="-n"
-else
-    RSYNC_N=""
-fi
-if [[ "$D_DELETE" == "y" ]]; then
-    RSYNC_DELETE="--delete"
-else
-    RSYNC_DELETE=""
+
+DRYRUN_OPT=""
+if [[ $D_DRYRUN == "y" ]]; then
+    DRYRUN_OPT="-n"
 fi
 
-RSYNC_CMD="rsync -av ${RSYNC_DELETE} --exclude .Trashes --exclude .fseventsd --exclude .Temporary* --exclude .Spotlight* --exclude .meta*  --exclude .Document* ${RSYNC_N} $srcFolder $dstFolder"
-echo "$RSYNC_CMD"
-time eval "$RSYNC_CMD"
-hdiutil detach $imageMountName
+NODELETE_OPT="-N"
+if [[ "$D_DELETE" == "y" ]]; then
+    NODELETE_OPT=""
+fi
+
+LOG_OPT=""
+if [[ $D_LOG == "y" ]]; then
+    LOG_OPT=" >> $LOG_FILE 2>&1"
+fi
+
+bash_cmd="${THE_SCRIPT} ${NODELETE_OPT} ${DRYRUN_OPT} \"${srcFolder}\" \"${dstFolder}\" ${LOG_OPT}"
+TIME_START=$(date '+%Y-%m-%d %H:%M:%S')
+echo "${TIME_START}: ${bash_cmd}"
+time eval "$bash_cmd"
