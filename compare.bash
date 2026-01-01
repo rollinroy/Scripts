@@ -69,12 +69,12 @@ cmp_file () {
     # not sufficient for objects that have "private" folder in the
     # as a paraent folder; so we must go up two levels
     IFILE=$1
+    #IFS=$'\n'
 
     FNAME=`echo $IFILE | awk -F "/" '{print $NF}'`
     LDIR1=`echo $IFILE | awk -F "/" '{print $(NF-1)}'`
     LDIR2=`echo $IFILE | awk -F "/" '{print $(NF-2)}'`
-#    echo ">>> LDIR1: $LDIR1"
-#    echo ">>> LDIR2: $LDIR2"
+    #echo ">>> FNAME is $FNAME, LDIR1 is $LDIR1, LDIR2 is $LDIR2"
     if [[ $LDIR1 = "private" ]]; then
         CDIR=`find $CMP_FOLDER -type d -iname $LDIR2`
         CFILE="$CDIR"/"$LDIR1"/"$FNAME"
@@ -84,13 +84,14 @@ cmp_file () {
     fi
 
     # first see if the file is in the same parent folder
+    #echo ">>> IFILE is $IFILE, CFILE is $CFILE"
     if [[ -f $CFILE ]]; then
         echo "Diff $IFILE and $CFILE" >> $FFILE
         diff -w $IFILE $CFILE > $TFILE
     else
         # check if the src file is someplace else (there may be mutipile places)
         echo Compare $CFILE does not exist but will check other places
-        CFIND=`find $CMP_FOLDER -name $FNAME`
+        CFIND=`IFS=$'\n';find $CMP_FOLDER -name $FNAME`
         NOFINDS=`echo $CFIND | awk '{print NF}'`
         if [[ $NOFINDS = 0 ]]; then
             echo "$IFILE not found in $CMP_FOLDER" >> $MFILE
