@@ -54,7 +54,6 @@ done
 # get what's left
 #
 shift "$((OPTIND-1))"
-
 #
 # get the src folder
 #
