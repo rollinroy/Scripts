@@ -18,13 +18,20 @@ function Help() {
 cat  << EOF
     This script copies ${DATA_SRC} to ${DATA_DST} via script:
         ${THE_SCRIPT}
+    Options:
+        -n)   dry run
+        -l)   log output to ${LOG_FILE}
 EOF
 }
 
+LOG="no"
+D_DRYRUN="n"
 # process options
-while getopts ":hn" opt; do
+while getopts ":hnl" opt; do
   case $opt in
     n) D_DRYRUN="y"
+    ;;
+    l) LOG="y"
     ;;
     h) Help
     exit
@@ -32,23 +39,27 @@ while getopts ":hn" opt; do
     \?) echo "Invalid option -$OPTARG" >&2
     exit 1
     ;;
-    :) echo "Invalid option: $OPTARG requires two arguments (dst/src)" 1>&2
+    :) echo "Option -$OPTARG requires an argument." 1>&2
     exit 1
     ;;
   esac
 
 done
 #
-# get the src folder
+# get what's left
 #
 shift "$((OPTIND-1))"
+
+DRYRUN_OPT=""
 if [[ "$D_DRYRUN" == "y" ]]; then
-    RSYNC_N="-n"
-else
-    RSYNC_N=""
+    DRYRUN_OPT="-n"
+
+LOG_OPT=""
+if [[ "$LOG" == "y" ]]; then
+    LOG_OPT=" >> $LOG_FILE 2>&1"
 fi
 
-bash_cmd="${THE_SCRIPT} ${RSYNC_N} ${DATA_SRC} ${DATA_DST} >> ${LOG_FILE} 2>&1"
+bash_cmd="${THE_SCRIPT} ${DRYRUN_OPT} ${DATA_SRC} ${DATA_DST} ${LOG_OPT}"
 TIME_START=$(date '+%Y-%m-%d %H:%M:%S')
 echo "${TIME_START}: ${bash_cmd}"
 time eval "$bash_cmd"
