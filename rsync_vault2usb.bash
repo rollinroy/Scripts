@@ -24,14 +24,14 @@ cat  << EOF
 EOF
 }
 
-LOG="no"
+D_LOG="no"
 D_DRYRUN="n"
 # process options
 while getopts ":hnl" opt; do
   case $opt in
     n) D_DRYRUN="y"
     ;;
-    l) LOG="y"
+    l) D_LOG="y"
     ;;
     h) Help
     exit
@@ -51,11 +51,12 @@ done
 shift "$((OPTIND-1))"
 
 DRYRUN_OPT=""
-if [[ "$D_DRYRUN" == "y" ]]; then
+if [[ $D_DRYRUN == "y" ]]; then
     DRYRUN_OPT="-n"
+fi
 
 LOG_OPT=""
-if [[ "$LOG" == "y" ]]; then
+if [[ $D_LOG == "y" ]]; then
     LOG_OPT=" >> $LOG_FILE 2>&1"
 fi
 
