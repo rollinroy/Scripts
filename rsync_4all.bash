@@ -2,12 +2,14 @@
 # error handling
 f () {
     errcode=$? # save the exit code as the first thing done in the trap function
-    echo ">>>ERROR $errorcode"
+    SFILE="$(basename "$0")"
+    echo ">>> Error in ${SFILE} ${errorcode}"
     echo "     the command executing at the time of the error was"
     echo "     $BASH_COMMAND"
     echo "     on line ${BASH_LINENO[0]}"
     exit $errcode  # or use some other value or do return instead
 }
+trap f ERR
 function Help() {
 cat  << EOF
     This script executes rsync from a src folder to a dst folder with two options:
@@ -88,7 +90,7 @@ else
     RSYNC_DELETE=""
 fi
 
-RSYNC_CMD="rsync -av ${RSYNC_DELETE} --exclude .Trashes --exclude .fseventsd --exclude .Temporary* --exclude .Spotlight* --exclude .DS_Store --exclude .meta*  --exclude .Document* ${RSYNC_N} \"$srcFolder\" \"$dstFolder\""
+RSYNC_CMD="rsync -av ${RSYNC_DELETE} --exclude .Trashes --exclude .fseventsd --exclude .Temporary* --exclude .Spotlight* --exclude .meta*  --exclude .Document* ${RSYNC_N} \"$srcFolder\" \"$dstFolder\""
 TIME_START=$(date '+%Y-%m-%d %H:%M:%S')
 echo "${TIME_START}: >>> Copying $srcFolder to $dstFolder "
 echo "${TIME_START}: ${RSYNC_CMD}"
