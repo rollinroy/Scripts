@@ -18,8 +18,10 @@ cat  << EOF
       ${THE_SCRIPT} /Volumes/DataSSD /Volumes/BU2_ArchiveData/
       ${THE_SCRIPT} /Volumes/WorkSSD /Volumes/BU2_ArchiveData/
       ${THE_SCRIPT} /Volumes/ScratchSSD /Volumes/BU2_ArchiveData/
-    As an archive, it does not delete files in the archive that are newer or
-    does not exist in the src folder.
+      ${THE_SCRIPT} /Volumes/ToArchive /Volumes/BU2_Archive/
+    As an archive, except for /Volumes/WorkSSD (where code is managed by github)
+    it does not delete files in the archive that are newer or does not exist in
+    the src folder.
 
     Options:
           -n)   dry run
@@ -73,6 +75,12 @@ if [[ $D_LOG == "y" ]]; then
     LOG_OPT=" >> $LOG_FILE 2>&1"
 fi
 
+DATA_SRC=/Volumes/ToArchive
+DATA_DST=/Volumes/BU2_ArchiveData
+bash_cmd="${THE_SCRIPT} ${NODELETE_OPT} ${DRYRUN_OPT} \"${DATA_SRC}\" \"${DATA_DST}\" ${LOG_OPT}"
+TIME_START=$(date '+%Y-%m-%d %H:%M:%S')
+echo "${TIME_START}: ${bash_cmd}"
+time eval "$bash_cmd"
 
 DATA_SRC=/Volumes/DataSSD
 DATA_DST=/Volumes/BU2_ArchiveData
@@ -81,18 +89,21 @@ TIME_START=$(date '+%Y-%m-%d %H:%M:%S')
 echo "${TIME_START}: ${bash_cmd}"
 time eval "$bash_cmd"
 
-DATA_SRC=/Volumes/WorkSSD
-bash_cmd="${THE_SCRIPT} ${NODELETE_OPT} ${DRYRUN_OPT} \"${DATA_SRC}\" \"${DATA_DST}\" ${LOG_OPT}"
-TIME_START=$(date '+%Y-%m-%d %H:%M:%S')
-echo "${TIME_START}: ${bash_cmd}"
-time eval "$bash_cmd"
-
 DATA_SRC=/Volumes/ScratchSSD
+DATA_DST=/Volumes/BU2_ArchiveData
 bash_cmd="${THE_SCRIPT} ${NODELETE_OPT} ${DRYRUN_OPT} \"${DATA_SRC}\" \"${DATA_DST}\" ${LOG_OPT}"
 TIME_START=$(date '+%Y-%m-%d %H:%M:%S')
 echo "${TIME_START}: ${bash_cmd}"
 time eval "$bash_cmd"
 
+
+DATA_SRC=/Volumes/WorkSSD
+DATA_DST=/Volumes/BU2_ArchiveData
+NODELETE_OPT=""
+bash_cmd="${THE_SCRIPT} ${NODELETE_OPT} ${DRYRUN_OPT} \"${DATA_SRC}\" \"${DATA_DST}\" ${LOG_OPT}"
+TIME_START=$(date '+%Y-%m-%d %H:%M:%S')
+echo "${TIME_START}: ${bash_cmd}"
+time eval "$bash_cmd"
 
 TIME_END=$(date '+%Y-%m-%d %H:%M:%S')
 echo "${TIME_END}: Done"
