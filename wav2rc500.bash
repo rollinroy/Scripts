@@ -73,6 +73,6 @@ echo "Input wav file: ${INPUT_WAV}"
 echo "Output wave file: ${OUTPUT_WAV}"
 echo "Normalizing and convert to 2 channels ..."
 # normalize and convert to 2 channels
-python3 -m ffmpeg_normalize -f -ac 2 ${INPUT_WAV} -o ${OUTPUT_WAV}
+python3 -m ffmpeg_normalize --loudness-range-target 10 -f -ac 2 ${INPUT_WAV} -o ${OUTPUT_WAV}
 echo "Convert to 32-BIT float bits: ${OUTPUT_WAV}"
 afconvert -d LEF32 ${OUTPUT_WAV} ${OUTPUT_WAV}
